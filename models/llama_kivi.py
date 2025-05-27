@@ -25,13 +25,23 @@ from transformers.utils import (
     logging
 )
 from transformers.cache_utils import Cache, DynamicCache
-from transformers.modeling_flash_attention_utils import (
-    _flash_attention_forward,
-    _get_unpad_data,
-    index_first_axis,
-    pad_input,
-    unpad_input
-)
+try:
+    from transformers.modeling_flash_attention_utils import _get_unpad_data
+except ImportError:
+    _get_unpad_data = None
+
+try:
+    from transformers.utils.import_utils import is_flash_attn_2_available
+    if is_flash_attn_2_available():
+        from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input
+    else:
+        index_first_axis = None
+        pad_input = None
+        unpad_input = None
+except ImportError:
+    index_first_axis = None
+    pad_input = None
+    unpad_input = None
 from torch.nn import CrossEntropyLoss
 import logging
 
@@ -510,7 +520,10 @@ class LlamaFlashAttention_KIVI(LlamaAttention_KIVI):
             softmax_scale (`float`, *optional*):
                 The scaling of QK^T before applying softmax. Default to 1 / sqrt(head_dim)
         """
-        from flash_attn import flash_attn_func, flash_attn_varlen_func
+        try:
+            from flash_attn import flash_attn_func, flash_attn_varlen_func
+        except ImportError:
+            raise ImportError("flash_attn is required for flash attention but not installed")
 
         # Contains at least one padding token in the sequence
         if attention_mask is not None:
