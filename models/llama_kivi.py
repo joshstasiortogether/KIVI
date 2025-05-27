@@ -18,6 +18,22 @@ from transformers.models.llama.modeling_llama import (
     logger
 )
 from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask
+from transformers.modeling_outputs import BaseModelOutputWithPast, CausalLMOutputWithPast
+from transformers.utils import (
+    add_start_docstrings_to_model_forward,
+    replace_return_docstrings,
+    logging
+)
+from transformers.cache_utils import Cache, DynamicCache
+from transformers.modeling_flash_attention_utils import (
+    _flash_attention_forward,
+    _get_unpad_data,
+    index_first_axis,
+    pad_input,
+    unpad_input
+)
+from torch.nn import CrossEntropyLoss
+import logging
 
 
 
