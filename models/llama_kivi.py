@@ -19,7 +19,7 @@ from transformers.models.llama.modeling_llama import (
 )
 from transformers.modeling_attn_mask_utils import _prepare_4d_causal_attention_mask
 
-_CONFIG_FOR_DOC = "LlamaConfig"
+
 
 
 class LlamaAttention_KIVI(nn.Module):
@@ -668,7 +668,6 @@ class LlamaModel_KIVI(LlamaPreTrainedModel):
     def set_input_embeddings(self, value):
         self.embed_tokens = value
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -818,8 +817,6 @@ class LlamaForCausalLM_KIVI(LlamaPreTrainedModel):
     def get_decoder(self):
         return self.model
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
-    @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
